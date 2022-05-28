@@ -1,7 +1,7 @@
 So with a lot of researching across everywhere I thought I'd post this up for any other Synology users that require live TV to have its commercials 
 cut out and the final file transcoded to mkv.
 
-I make no promises that this will work for you, and you might need to edit certain files in case they do not match yur system.
+I make no promises that this will work for you, and you might need to edit certain files in case they do not match your system.
 
 ### MySetup
 Synology DS1513+ DSM 6.2.4-25556 Update 3
@@ -54,7 +54,9 @@ https://github.com/BrettSheleski/comchap
 ### Emby Post Proccess
 
 In Emby under Live TV on the Advanced tab under Recording Post Processing
+
 Post-processing application: /volume1/@appstore/comskip/bin/comcut
+
 Post-processor command line arguments: "{path}"
 
 ssh into your Synology box (DMS6) with your username and password using Terminal or a similer app
@@ -127,12 +129,10 @@ Then we need to give it the right permissions to execute (755)
 
 I'm not sure if this is required but it seems that it works, so 
 in your DSM, check your Users and Groups and see if emby is in the group users
-if so run the following
+If not add emby to your users group
 
-chown (this changes everything in comskip to be owned by emby)
-chgrp (this changes the group to users)
-chmod (sets executable permissions on all comskip/bin files)
- 
+Then run the following
+
 ```bash
 cd ../../
 chmod -R 755 comskip/bin
@@ -140,14 +140,24 @@ chown -R emby comskip
 chgrp -R users comskip
 ```
 
+chown (this changes everything in comskip to be owned by emby)
+
+chgrp (this changes the group to users)
+
+chmod (sets executable permissions on all comskip/bin files)
+ 
+
+
 ### To Test
-in DSM File Explorer find a TV recording you did that should have commercials, right click and select properties
-The dialog should give you a text box with the file location, select the whole location and copy
-back in terminal type
+In DSM File Explorer find a TV recording you did that should have commercials, right click and select properties
+
+The dialog should give you a text box with the file location, select the whole location and copy it
+
+Then back in terminal type
 ```bash
 sh /volume1/@appstore/comskip/bin/comcut 
 ```
-then paste in the file location in between single or double quotes in case the location has spaces
+then paste in the file location in between single or double quotes in case the file location has spaces
 e.g
 ```bash
 sh /volume1/@appstore/comskip/bin/comcut '/volume1/media/RecordedTV/The Adventures of Sherlock Holmes (1979)/Season 2/The Adventures of Sherlock Holmes S02E06 The Final Problem.ts'
