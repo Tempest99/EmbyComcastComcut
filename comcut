@@ -1,0 +1,82 @@
+#!/usr/bin/bash
+
+CSDIR=$(dirname $0)
+TMPDIR="/volume1/media/tmp"
+
+lockfile="${TMPDIR}/post.lock"
+while [ -f "$lockfile" ]; do
+    echo "Waiting"
+    sleep 5
+done
+touch "$lockfile"
+
+infile=$1
+outfile="$infile"
+show=`basename "$infile"`
+edlfile="${TMPDIR}/${show%.*}.edl"
+logfile="${TMPDIR}/${show%.*}.log"
+logofile="${TMPDIR}/${show%.*}.logo.txt"
+txtfile="${TMPDIR}/${show%.*}.txt"
+## I have no idea where this VPrj file is getting created
+vprjfile="${TMPDIR}/${show%.*}.VPrj"
+showfile="${TMPDIR}/${show%.*}_a.txt"
+chapterfile=""
+final="${infile%.*}.mkv"
+
+i=0
+start=0
+hascommercials=false
+
+writefiles()
+    {
+	printf "file '%s'\n" "$chapterfile" >> "$showfile"
+    	duration=`echo "$end" "$start" | awk  '{printf "%f", $1 - $2}'`
+    	/usr/local/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -nostdin -i "$infile" -ss $start -t $duration -c copy -y "$chapterfile"
+    }
+
+${CSDIR}/comskip --output=${TMPDIR} --ini=${CSDIR}/../var/comskip.ini "$infile"
+
+while IFS=$'\t\n' read -r end startnext c _; 
+do
+  if [ `echo "$end" | awk '{printf "%i", $0 * 1000}'` -gt `echo "$start" | awk '{printf "%i", $0 * 1000}'` ]
+    then
+    i=$((i + 1))
+    hascommercials=true
+	chapterfile=${TMPDIR}/part-$i.ts
+    writefiles $end $start $i "$chapterfile" "$showfile" "$infile"
+  fi
+  start=$startnext
+done < "$edlfile"
+
+#dont forget to add the final part from last commercial to end of file
+if [ $hascommercials=true ]
+  then
+  end=`/usr/local/ffmpeg/bin/ffmpeg -hide_banner -nostdin -i "$infile" 2>&1 | grep Duration | awk '{print $2}' | tr -d , | awk -F: '{ printf "%f", ($1*3600)+($2*60)+$3 }'`
+  if [ `echo "$end" | awk '{printf "%i", $0 * 1000}'` -gt `echo "$start" | awk '{printf "%i", $0 * 1000}'` ]
+    then
+    i=$((i + 1))
+    chapterfile=${TMPDIR}/part-$i.ts
+    writefiles $end $start $i "$chapterfile" "$showfile" "$infile"
+  fi
+fi
+    
+/usr/local/ffmpeg/bin/ffmpeg -hide_banner -loglevel error -nostdin -f concat -safe 0 -i "$showfile" -c copy -y "$outfile"
+
+/usr/local/ffmpeg/bin/ffmpeg -i "$outfile" -vf yadif -c:v libx264 -preset ultrafast -crf 23 -max_muxing_queue_size 1024 -c:a copy "$final"
+
+
+#/usr/local/ffmpeg/bin/ffmpeg -i "$outfile" -vf yadif -c:v libx264 -preset ultrafast -s 1280x720 -crf 18 -max_muxing_queue_size 1024 -c:a copy "$final"
+
+#/usr/local/ffmpeg/bin/ffmpeg -i "$outfile" -vf yadif -c:v libx264 -preset slow -crf 18 -max_muxing_queue_size 1024 -c:a copy "$final"
+
+
+rm "$edlfile"
+rm "$logfile"
+rm "$logofile"
+rm "$txtfile"
+rm "$vprjfile"
+rm ${TMPDIR}/part-*.ts
+rm "$showfile"
+rm "$1"
+rm "$lockfile"
+
