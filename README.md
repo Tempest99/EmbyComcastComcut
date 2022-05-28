@@ -1,23 +1,28 @@
-
-sh /volume1/@appstore/comskip/bin/comcut '/volume1/media/RecordedTV/The Return of Sherlock Holmes (1984)/Season 3/The Return of Sherlock Holmes S03E01 The Empty House.ts'
-
-
 So with a lot of researching across everywhere I thought I'd post this up for any other Synology users that require live TV to have its commercials 
-cut out and the final file transcoded.
+cut out and the final file transcoded to mkv.
+
+I make no promises that this will work for you, and you might need to edit certain files in case they do not match yur system.
 
 ### MySetup
 Synology DS1513+ DSM 6.2.4-25556 Update 3
+
+Emby Media Server
+
 Mac's, iOS and AppleTV
+
 All my Media is set at the route of my Synology in File Station
+
 media/TVShows
+
 media/TVRecordings
+
 media/Movies etc
+
 but the exact path to the media directory is /volume1/media/
 
 If your not familer with Terminal/Commandline stuff this might not be that easy
 
-Before you start you need to install
-the comskip and FFmpeg packages from SynoCommunity and any packages that they might require
+Before you start you need to install the comskip and FFmpeg packages from SynoCommunity and any packages that they might require.
 
 https://synocommunity.com
 https://github.com/SynoCommunity/spksrc/wiki
@@ -150,7 +155,8 @@ sh /volume1/@appstore/comskip/bin/comcut '/volume1/media/RecordedTV/The Adventur
 and hit enter, now go down the pub as this will take a while, it's not that bad depends upon your nas
 
 If nothing moans when you start it and the tmp directory gets some files (viewd in your DSM File Explorer)
-then you should be good to go, and when finished the tmp dir will be empty and you should have an .mkv file instead of a .ts file in teh show directory
+
+then you should be good to go, and when finished the tmp dir will be empty and you should have an .mkv file instead of a .ts file in the show directory.
 
 
 
