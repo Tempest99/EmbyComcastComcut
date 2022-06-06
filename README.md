@@ -12,7 +12,7 @@ Mac's, iOS and AppleTV
 
 All my Media is set at the route of my Synology in File Station
 
-The media diris also a shared folder owned originally by admin but now myself and users group
+The media dir is also a shared folder owned originally by admin but now myself and users group
 
 media/TVShows
 
@@ -26,11 +26,14 @@ If your not familer with Terminal/Commandline stuff this might not be that easy
 
 Before you start you need to install the comskip and FFmpeg packages from SynoCommunity and any packages that they might require.
 
-Although this was my first step, I am no longer using the ffmpeg from synocommunity, (checout the path in the comcut file) as it seems Emby has included it in there install
+Although this was my first step, I am no longer using the ffmpeg from synocommunity, (checkout the path in the comcut file) as it seems Emby has included it in their install
 
 https://synocommunity.com
+
 https://github.com/SynoCommunity/spksrc/wiki
+
 https://github.com/SynoCommunity/spksrc/wiki/Comskip
+
 https://github.com/SynoCommunity/spksrc/wiki/FAQ-FFmpeg
 
 
@@ -73,6 +76,8 @@ Post-processing application: /volume1/@appstore/comskip/bin/comcut
 Post-processor command line arguments: "{path}"
 
 ssh into your Synology box (DMS7) with your username and password using Terminal or a similer app
+
+I am not walking you through setting up SSH, as there is enough on the net about that
 ```bash
 ssh user@YourNasIPAddress
 ```
@@ -170,11 +175,6 @@ cat comcut
 Okay, so now some permission changes
 Then we need to give it the right permissions to execute (755)
 
-
-I'm not sure if this is required but it seems that it works, so 
-in your DSM, check your Users and Groups and see if emby is in the group users
-If not add emby to your users group
-
 Then run the following
 
 ```bash
@@ -203,12 +203,12 @@ Running the comcut script as root will always work, so exit root back to your ac
 Then back in terminal type
 ```bash
 exit
-sh /volume1/@appstore/comskip/bin/comcut 
+/volume1/@appstore/comskip/bin/comcut 
 ```
 then paste in the file location in between double quotes in case the file location has spaces (some even have ')
 e.g
 ```bash
-sh /volume1/@appstore/comskip/bin/comcut "/volume1/media/RecordedTV/The Adventures of Sherlock Holmes (1979)/Season 2/The Adventures of Sherlock Holmes S02E06 The Final Problem.ts"
+/volume1/@appstore/comskip/bin/comcut "/volume1/media/RecordedTV/The Adventures of Sherlock Holmes (1979)/Season 2/The Adventures of Sherlock Holmes S02E06 The Final Problem.ts"
 ```
 and hit enter, now go down the pub as this will take a while, it's not that bad depends upon your nas
 
