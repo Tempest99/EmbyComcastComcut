@@ -85,7 +85,7 @@ enter your root/admin password
 
 now you're root
 
-### Before you blindly Copy and Paste
+### Before you blindly Copy and Pasting
 
 Please check all paths in side the comcut file before you upload it,
 For the time being I have hard encoded what mine are,  
@@ -93,7 +93,15 @@ For the time being I have hard encoded what mine are,
 If your volume is not volume1 you will need to change that.
 
 If your media dir is not media, and/or your recordings directory is not a child of your media dir,
- then change the paths accordingly
+ then change the paths accordingly.
+ 
+ FFmPeg path, So what seemded to be like a major permissions error was that the syno-ffmpeg didnt have permissions to write to my media dir, 
+ regardless of what was set inside Synology's Control Panel well to be perfectly honest 
+ to the show directory that the ts file resided in, no matter what I tried, with ownership, it would never work except as root in ssh.
+ 
+ So before I went down the road of creating a smlink to ffmpeg in EmbyServer dir, I went and had a little nose around, and found Emby had already got an FFMpeg file,
+ although it was strange as I couldnt access it, but I could access emby-ffmpeg
+ 
 
 
 ### Finding your Comskip installation
