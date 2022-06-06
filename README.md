@@ -4,13 +4,15 @@ cut out and the final file transcoded to mkv.
 I make no promises that this will work for you, and you might need to edit certain files in case they do not match your system.
 
 ### MySetup
-Synology DS1513+ DSM 6.2.4-25556 Update 3
+Synology DS1513+ DSM 7.1-42661
 
-Emby Media Server
+Emby Media Server 4.7.20
 
 Mac's, iOS and AppleTV
 
 All my Media is set at the route of my Synology in File Station
+
+The media diris also a shared folder owned originally by admin but now myself and users group
 
 media/TVShows
 
@@ -24,10 +26,21 @@ If your not familer with Terminal/Commandline stuff this might not be that easy
 
 Before you start you need to install the comskip and FFmpeg packages from SynoCommunity and any packages that they might require.
 
+Although this was my first step, I am no longer using the ffmpeg from synocommunity, (checout the path in the comcut file) as it seems Emby has included it in there install
+
 https://synocommunity.com
 https://github.com/SynoCommunity/spksrc/wiki
 https://github.com/SynoCommunity/spksrc/wiki/Comskip
 https://github.com/SynoCommunity/spksrc/wiki/FAQ-FFmpeg
+
+
+Also, I migrated from DSM6 to DSM7 so make sure you have your internal user set for your media dir as per whats mentioned here
+
+https://emby.media/community/index.php?/topic/99745-dsm-6-to-dsm-7-emby-migration-instructions/
+
+From Control Panel go to Shared Folder and edit each share that is used by Emby Server. 
+
+Click the share, then EDIT, go to permission tab, select System internal user from drop down, grant emby user read/write access.
 
 
 Create a directory called tmp in your media DIR in File Station to help keeps things a bit cleaner whilst testing this out
@@ -59,7 +72,7 @@ Post-processing application: /volume1/@appstore/comskip/bin/comcut
 
 Post-processor command line arguments: "{path}"
 
-ssh into your Synology box (DMS6) with your username and password using Terminal or a similer app
+ssh into your Synology box (DMS7) with your username and password using Terminal or a similer app
 ```bash
 ssh user@YourNasIPAddress
 ```
@@ -69,10 +82,19 @@ then once logged in you need to become root
 sudo -i
 ```
 enter your root/admin password
-```bash
-sudo su
-```
+
 now you're root
+
+### Before you blindly Copy and Paste
+
+Please check all paths in side the comcut file before you upload it,
+For the time being I have hard encoded what mine are,  
+
+If your volume is not volume1 you will need to change that.
+
+If your media dir is not media, and/or your recordings directory is not a child of your media dir,
+ then change the paths accordingly
+
 
 ### Finding your Comskip installation
 
@@ -83,29 +105,43 @@ ls /volume1/@appstore/comskip
 ```
 You should see a few directories bin, lib & var
 we are only intereted in bin and var
-If you don't see those direcotories or comskip your'll need to figure out which volume things are installed on and that's beyound this help
+If you don't see those directories or comskip your'll need to figure out which volume things are installed on and that's beyound this help
 
-If you do see the var dir then we can move on.
+if you dont see a var dir, you'll need to create it with
+
+```bash
+mkdir /volume1/@appstore/comskip/var
+```
+
+If you do see the var dir then we can move in and check for an existing comskip.ini file.
 
 ```bash
 cd /volume1/@appstore/comskip/var
+ls -al
 ```
+
 So you need to edit your comskip.ini file, or create a new on, personally I find that Synology's implentation of vi or vim
 is rubbish to use as an editor and it frustrates me,  
 So what I tend to make a backup of the file I want to edit then create a new .ini file and paste in the contents of a file I've edited in a text editor
-and any chnages I want to make I do so on my Mac in textastic or any other plain text editor.
+and any changes I want to make I do so on my Mac in Textastic or any other plain text editor.
 I do this like this.
 ```bash
 mv comskip.ini comskip.ini-bak
 vi comskip.ini
 ```
 If your not used to vi, I will give you a quic run through
+
 To instert Text hit the letter i
+
 If you copy the ini file from your text editor you can paste that in terminal
+
 Once pasted, the pasted text may look a little disjointed, ignore that
+
 To save the text, hit ESC (escape Key) followed by :w and then enter
+
 That will save the file
-ESC :q will quit vi
+
+To quite use ESC :q 
 
 If you want to just check it pasted ok, you can run
 ```bash
@@ -136,13 +172,14 @@ Then run the following
 ```bash
 cd ../../
 chmod -R 755 comskip/bin
-chown -R emby comskip
-chgrp -R users comskip
+chown -R sc-comskip:synocommunity comskip
+chown emby:emby comskip/bin/comcut
 ```
 
+On DSM7 it seems that comskip is now owned by sc-comskip and grouped to synocommunity
 chown (this changes everything in comskip to be owned by emby)
 
-chgrp (this changes the group to users)
+chown emby:emby comskip/bin/comcut (this makes comcut owned by emby)
 
 chmod (sets executable permissions on all comskip/bin files)
  
@@ -153,20 +190,26 @@ In DSM File Explorer find a TV recording you did that should have commercials, r
 
 The dialog should give you a text box with the file location, select the whole location and copy it
 
+Running the comcut script as root will always work, so exit root back to your account
+
 Then back in terminal type
 ```bash
+exit
 sh /volume1/@appstore/comskip/bin/comcut 
 ```
-then paste in the file location in between single or double quotes in case the file location has spaces
+then paste in the file location in between double quotes in case the file location has spaces (some even have ')
 e.g
 ```bash
-sh /volume1/@appstore/comskip/bin/comcut '/volume1/media/RecordedTV/The Adventures of Sherlock Holmes (1979)/Season 2/The Adventures of Sherlock Holmes S02E06 The Final Problem.ts'
+sh /volume1/@appstore/comskip/bin/comcut "/volume1/media/RecordedTV/The Adventures of Sherlock Holmes (1979)/Season 2/The Adventures of Sherlock Holmes S02E06 The Final Problem.ts"
 ```
 and hit enter, now go down the pub as this will take a while, it's not that bad depends upon your nas
 
 If nothing moans when you start it and the tmp directory gets some files (viewd in your DSM File Explorer)
 
 then you should be good to go, and when finished the tmp dir will be empty and you should have an .mkv file instead of a .ts file in the show directory.
+
+If that all worked, then go find a 15minute cartoon to record and come back to FileStation to see if it all went ok
+
 
 
 
