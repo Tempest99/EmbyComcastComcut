@@ -182,6 +182,7 @@ cd ../../
 chmod -R 755 comskip/bin
 chown -R sc-comskip:synocommunity comskip
 chown emby:emby comskip/bin/comcut
+chown -R emby:emby /volume1/media/RecordedTV
 ```
 
 On DSM7 it seems that comskip is now owned by sc-comskip and grouped to synocommunity
@@ -190,6 +191,10 @@ chown (this changes everything in comskip to be owned by emby)
 chown emby:emby comskip/bin/comcut (this makes comcut owned by emby)
 
 chmod (sets executable permissions on all comskip/bin files)
+
+Update: chown the directory your TV recordings go to, after an Emby update it stopped working,
+ I'm not sure why but emby no longer had permissions to write the recordings, I suspect it had something to do with the 
+ internal user but as emby is now an internal user you can't just select the owner in File Station, so change the permissions in ssh as root works fine.
  
 
 
